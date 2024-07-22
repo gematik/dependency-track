@@ -18,8 +18,8 @@
   ~ Copyright (c) OWASP Foundation. All Rights Reserved.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
         <groupId>us.springett</groupId>
@@ -576,7 +576,7 @@
                         <configuration>
                             <target>
                                 <copy file="${project.build.directory}/bom.json"
-                                      tofile="${project.build.directory}/${project.artifactId}/.well-known/sbom"/>
+                                  tofile="${project.build.directory}/${project.artifactId}/.well-known/sbom"/>
                             </target>
                         </configuration>
                         <goals>
@@ -604,27 +604,27 @@
             <build>
                 <pluginManagement>
                     <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-clean-plugin</artifactId>
-                        <version>3.4.0</version>
-                        <configuration>
-                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
-                            <filesets>
-                                <fileset>
-                                    <directory>target</directory>
-                                    <followSymlinks>false</followSymlinks>
-                                    <useDefaultExcludes>false</useDefaultExcludes>
-                                    <includes>
-                                        <include>*/</include>
-                                    </includes>
-                                    <excludes>
-                                        <exclude>dependency-track*.jar</exclude>
-                                    </excludes>
-                                </fileset>
-                            </filesets>
-                        </configuration>
-                    </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-clean-plugin</artifactId>
+                            <version>3.4.0</version>
+                            <configuration>
+                                <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                                <filesets>
+                                    <fileset>
+                                        <directory>target</directory>
+                                        <followSymlinks>false</followSymlinks>
+                                        <useDefaultExcludes>false</useDefaultExcludes>
+                                        <includes>
+                                            <include>*/</include>
+                                        </includes>
+                                        <excludes>
+                                            <exclude>dependency-track*.jar</exclude>
+                                        </excludes>
+                                    </fileset>
+                                </filesets>
+                            </configuration>
+                        </plugin>
                     </plugins>
                 </pluginManagement>
             </build>

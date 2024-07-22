@@ -37,6 +37,7 @@ import org.dependencytrack.tasks.GitHubAdvisoryMirrorTask;
 import org.dependencytrack.tasks.IndexTask;
 import org.dependencytrack.tasks.InternalComponentIdentificationTask;
 import org.dependencytrack.tasks.KennaSecurityUploadTask;
+import org.dependencytrack.tasks.MergeAnalysisTask;
 import org.dependencytrack.tasks.NewVulnerableDependencyAnalysisTask;
 import org.dependencytrack.tasks.NistApiMirrorTask;
 import org.dependencytrack.tasks.NistMirrorTask;
@@ -121,6 +122,7 @@ public class EventSubsystemInitializer implements ServletContextListener {
         EVENT_SERVICE.subscribe(NistMirrorEvent.class, NistMirrorTask.class);
         EVENT_SERVICE.subscribe(NistApiMirrorEvent.class, NistApiMirrorTask.class);
         EVENT_SERVICE.subscribe(EpssMirrorEvent.class, EpssMirrorTask.class);
+        EVENT_SERVICE.subscribe(MergeAnalysisEvent.class, MergeAnalysisTask.class);
 
         EVENT_SERVICE_ST.subscribe(IndexEvent.class, IndexTask.class);
 

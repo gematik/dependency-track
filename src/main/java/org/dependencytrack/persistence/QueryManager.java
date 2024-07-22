@@ -518,6 +518,10 @@ public class QueryManager extends AlpineQueryManager {
         return getProjectQueryManager().getProjectProperties(project);
     }
 
+    public void mergeAnalysisTrailFromTo(UUID sourceProject, UUID targetProject) {
+        getProjectQueryManager().mergeAnalysisTrailFromTo(sourceProject, targetProject);
+    }
+
     public Bom createBom(Project project, Date imported, Bom.Format format, String specVersion, Integer bomVersion, String serialNumber) {
         return getBomQueryManager().createBom(project, imported, format, specVersion, bomVersion, serialNumber);
     }

@@ -20,6 +20,7 @@ package org.dependencytrack.resources.v1;
 
 import alpine.common.validation.RegexSequence;
 import alpine.common.validation.ValidationTask;
+import alpine.event.framework.Event;
 import alpine.model.LdapUser;
 import alpine.model.ManagedUser;
 import alpine.model.OidcUser;
@@ -35,13 +36,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.ws.rs.PathParam;
 import org.apache.commons.lang3.StringUtils;
 import org.dependencytrack.auth.Permissions;
+import org.dependencytrack.event.MergeAnalysisEvent;
 import org.dependencytrack.model.Analysis;
 import org.dependencytrack.model.AnalysisState;
 import org.dependencytrack.model.Component;
 import org.dependencytrack.model.Project;
 import org.dependencytrack.model.Vulnerability;
+import org.dependencytrack.model.validation.ValidUuid;
 import org.dependencytrack.persistence.QueryManager;
 import org.dependencytrack.resources.v1.vo.AnalysisRequest;
 import org.dependencytrack.util.AnalysisCommentUtil;
@@ -193,6 +197,44 @@ public class AnalysisResource extends AlpineResource {
             analysis = qm.getAnalysis(component, vulnerability);
             NotificationUtil.analyzeNotificationCriteria(qm, analysis, analysisStateChange, suppressionChange);
             return Response.ok(analysis).build();
+        }
+    }
+
+    @PUT
+    @Path("/merge/project/{projectId}/to/{targetProjectId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+        summary = "Compare analysis trails from two projects and add all information that are missing in the target project. The source project will not be changed.",
+        description = "<p>Requires permission <strong>VULNERABILITY_ANALYSIS</strong></p>"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "The created analysis",
+            content = @Content(schema = @Schema(implementation = Analysis.class))
+        ),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "404", description = "On of the projects could not be found")
+    })
+    @PermissionRequired(Permissions.Constants.VULNERABILITY_ANALYSIS)
+    public Response mergeAnalysis(
+        @PathParam("projectId") @ValidUuid String sourceProjectId,
+        @PathParam("targetProjectId") @ValidUuid String targetProjectId) {
+        try (QueryManager qm = new QueryManager()) {
+            final Project sourceProject = qm.getObjectByUuid(Project.class, sourceProjectId, Project.FetchGroup.ALL.name());
+            if (sourceProject == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("The source project could not be found.").build();
+            }
+            final Project targetProject = qm.getObjectByUuid(Project.class, targetProjectId, Project.FetchGroup.ALL.name());
+            if (targetProject == null) {
+                return Response.status(Response.Status.NOT_FOUND).entity("The target project could not be found.").build();
+            }
+
+            MergeAnalysisEvent event = new MergeAnalysisEvent(sourceProjectId, targetProjectId);
+            Event.dispatch(event);
+            return Response.ok(java.util.Collections.singletonMap("token", event.getChainIdentifier())).build();
+
         }
     }
 
